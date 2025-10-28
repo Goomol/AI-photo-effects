@@ -6,8 +6,6 @@ export interface Effect {
   imageLabels: string[];
   title: string;
   description: string;
-  likes?: number;
-  dislikes?: number;
 }
 
 export interface UploadedImage {
@@ -15,11 +13,4 @@ export interface UploadedImage {
   mimeType: string;
 }
 
-export type SortOption = 'popular' | 'alphabetical' | 'newest';
-
-export interface Ratings {
-  [effectId: string]: {
-    likes: number;
-    dislikes: number;
-  };
-}
+export type SortOption = 'alphabetical' | 'newest';

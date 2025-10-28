@@ -1,7 +1,8 @@
+
 import React from 'react';
 import { ImageUploader } from './ImageUploader';
 import { ResultDisplay } from './ResultDisplay';
-import type { Effect, UploadedImage, Ratings } from '../types';
+import type { Effect, UploadedImage } from '../types';
 
 interface EffectDetailProps {
   effect: Effect;
@@ -10,6 +11,8 @@ interface EffectDetailProps {
   isLoading: boolean;
   error: string | null;
   ratings?: { likes: number; dislikes: number };
+  userVote?: 'good' | 'bad';
+  isVoting: boolean;
   onUpload: (images: UploadedImage[]) => void;
   onSubmit: () => void;
   onDownload: () => void;
@@ -33,6 +36,8 @@ export const EffectDetail: React.FC<EffectDetailProps> = ({
   isLoading,
   error,
   ratings,
+  userVote,
+  isVoting,
   onUpload,
   onSubmit,
   onDownload,
@@ -96,6 +101,8 @@ export const EffectDetail: React.FC<EffectDetailProps> = ({
           generatedImage={generatedImage}
           error={error}
           ratings={ratings}
+          userVote={userVote}
+          isVoting={isVoting}
           onDownload={onDownload}
           onRetry={onRetry}
           onFeedback={onFeedback}

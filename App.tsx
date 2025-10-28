@@ -1,12 +1,14 @@
+
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { Header } from './components/Header';
 import { EffectSelector } from './components/EffectSelector';
 import { EffectDetail } from './components/EffectDetail';
+import { Spinner } from './components/Spinner';
 import { generateImage } from './services/geminiService';
 import * as feedbackService from './services/feedbackService';
 import { translations } from './translations';
 import { BASE_EFFECTS } from './constants';
-import type { Effect, UploadedImage, Ratings, SortOption } from './types';
+import type { Effect, UploadedImage, Ratings, SortOption, UserVotes } from './types';
 
 type Language = 'en' | 'fa';
 
@@ -19,11 +21,26 @@ function App() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [ratings, setRatings] = useState<Ratings>({});
+  const [userVotes, setUserVotes] = useState<UserVotes>({});
   const [sortBy, setSortBy] = useState<SortOption>('newest');
+  const [isInitializing, setIsInitializing] = useState<boolean>(true);
+  const [isVoting, setIsVoting] = useState<boolean>(false);
 
-  // Load ratings on initial render
+  // Load ratings and user votes from services on initial render
   useEffect(() => {
-    setRatings(feedbackService.getRatings());
+    const loadInitialData = async () => {
+      try {
+        const serverRatings = await feedbackService.getRatings();
+        setRatings(serverRatings);
+        setUserVotes(feedbackService.getUserVotes());
+      } catch (e) {
+        console.error("Failed to load initial data:", e);
+        setError("Failed to connect to the server. Please refresh the page.");
+      } finally {
+        setIsInitializing(false);
+      }
+    };
+    loadInitialData();
   }, []);
 
   // Translations and Effects Data
@@ -113,11 +130,32 @@ function App() {
     document.body.removeChild(link);
   };
   
-  const handleFeedback = (rating: 'good' | 'bad') => {
-    if (!selectedEffect) return;
-    const newRatings = feedbackService.saveRating(selectedEffect.id, rating);
-    setRatings(newRatings);
+  const handleFeedback = async (rating: 'good' | 'bad') => {
+    if (!selectedEffect || isVoting) return;
+    
+    setIsVoting(true);
+    try {
+      await feedbackService.saveVote(selectedEffect.id, rating);
+      // Refresh ratings and votes from services to update UI
+      const newRatings = await feedbackService.getRatings();
+      setRatings(newRatings);
+      setUserVotes(feedbackService.getUserVotes());
+    } catch (e) {
+        console.error("Failed to save vote:", e);
+        // Optionally show an error to the user
+    } finally {
+        setIsVoting(false);
+    }
   };
+
+  if (isInitializing) {
+    return (
+      <div className="bg-gray-900 text-gray-100 min-h-screen flex flex-col items-center justify-center">
+        <Spinner />
+        <p className="mt-4 text-gray-400">{t.initializing}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gray-900 text-gray-100 min-h-screen font-sans">
@@ -131,6 +169,8 @@ function App() {
             isLoading={isLoading}
             error={error}
             ratings={ratings[selectedEffect.id]}
+            userVote={userVotes[selectedEffect.id]}
+            isVoting={isVoting}
             onUpload={handleImageUpload}
             onSubmit={handleSubmit}
             onDownload={handleDownload}

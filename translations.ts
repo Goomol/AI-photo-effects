@@ -1,3 +1,4 @@
+
 export const translations = {
   en: {
     headerTitle: 'AI Photo Booth',
@@ -31,6 +32,7 @@ export const translations = {
     feedbackCommunity: 'Join {count} others who loved this effect!',
     feedbackCommunityDisliked: '{count} users found this effect unhelpful.',
     backToEffects: 'Back to all effects',
+    initializing: 'Connecting to services...',
     effects: {
       'auto-improve': { title: 'Auto Improve', description: 'Automatically enhances brightness, contrast, and color.' },
       'ghibli': { title: 'Ghibli Style', description: 'Turns your photo into a whimsical, hand-drawn anime scene.' },
@@ -107,6 +109,7 @@ export const translations = {
     feedbackCommunity: 'به {count} نفر دیگری که این افکت را دوست داشتند بپیوندید!',
     feedbackCommunityDisliked: '{count} کاربر این افکت را مفید ندانستند.',
     backToEffects: 'بازگشت به همه افکت‌ها',
+    initializing: 'در حال اتصال به سرویس‌ها...',
     effects: {
       'auto-improve': { title: 'بهبود خودکار', description: 'به طور خودکار روشنایی، کنتراست و رنگ را افزایش می‌دهد.' },
       'ghibli': { title: 'سبک گیبلی', description: 'عکس شما را به یک صحنه انیمه رویایی و نقاشی شده با دست تبدیل می‌کند.' },

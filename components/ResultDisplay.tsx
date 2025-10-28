@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Spinner } from './Spinner';
 
 interface ResultDisplayProps {
@@ -7,6 +7,8 @@ interface ResultDisplayProps {
   generatedImage: string | null;
   error: string | null;
   ratings?: { likes: number; dislikes: number };
+  userVote?: 'good' | 'bad';
+  isVoting: boolean;
   onDownload: () => void;
   onRetry: () => void;
   onFeedback: (rating: 'good' | 'bad') => void;
@@ -44,28 +46,24 @@ const ErrorMessage: React.FC<{ error: string, t: ResultDisplayProps['t'] }> = ({
 const FeedbackDisplay: React.FC<{
   onFeedback: (rating: 'good' | 'bad') => void;
   ratings?: { likes: number; dislikes: number };
+  userVote?: 'good' | 'bad';
+  isVoting: boolean;
   t: ResultDisplayProps['t'];
-}> = ({ onFeedback, ratings, t }) => {
-  const [feedbackGiven, setFeedbackGiven] = useState<'good' | 'bad' | null>(null);
-
-  const handleFeedback = (rating: 'good' | 'bad') => {
-    setFeedbackGiven(rating);
-    onFeedback(rating);
-  };
+}> = ({ onFeedback, ratings, userVote, isVoting, t }) => {
   
-  if (feedbackGiven) {
+  if (userVote) {
     const likeCount = ratings?.likes ?? 0;
     const dislikeCount = ratings?.dislikes ?? 0;
 
     return (
         <div className="text-center bg-gray-800/50 p-3 rounded-lg">
             <p className="font-semibold text-cyan-300">{t.feedbackThanks}</p>
-            {feedbackGiven === 'good' && likeCount > 0 && (
+            {userVote === 'good' && likeCount > 0 && (
                 <p className="text-sm text-gray-400 mt-1">
                     {t.feedbackCommunity.replace('{count}', likeCount.toLocaleString())}
                 </p>
             )}
-             {feedbackGiven === 'bad' && dislikeCount > 0 && (
+             {userVote === 'bad' && dislikeCount > 0 && (
                 <p className="text-sm text-gray-400 mt-1">
                     {t.feedbackCommunityDisliked.replace('{count}', dislikeCount.toLocaleString())}
                 </p>
@@ -76,9 +74,9 @@ const FeedbackDisplay: React.FC<{
 
   return (
     <div className="flex items-center justify-center gap-3 text-gray-300">
-        <span>{t.feedbackQuestion}</span>
-        <button onClick={() => handleFeedback('good')} className="p-2 rounded-full transition-colors text-2xl hover:bg-gray-700">👍</button>
-        <button onClick={() => handleFeedback('bad')} className="p-2 rounded-full transition-colors text-2xl hover:bg-gray-700">👎</button>
+        <span className={isVoting ? 'opacity-50' : ''}>{t.feedbackQuestion}</span>
+        <button onClick={() => onFeedback('good')} disabled={isVoting} className="p-2 rounded-full transition-colors text-2xl hover:bg-gray-700 disabled:opacity-50 disabled:cursor-wait">👍</button>
+        <button onClick={() => onFeedback('bad')} disabled={isVoting} className="p-2 rounded-full transition-colors text-2xl hover:bg-gray-700 disabled:opacity-50 disabled:cursor-wait">👎</button>
     </div>
   );
 };
@@ -89,23 +87,13 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
   generatedImage,
   error,
   ratings,
+  userVote,
+  isVoting,
   onDownload,
   onRetry,
   onFeedback,
   t
 }) => {
-  const [feedbackGiven, setFeedbackGiven] = useState(false);
-
-  // Reset feedback state when image changes
-  useEffect(() => {
-    setFeedbackGiven(false);
-  }, [generatedImage]);
-
-  const handleFeedback = (rating: 'good' | 'bad') => {
-    setFeedbackGiven(true);
-    onFeedback(rating);
-  };
-  
   const showInitialState = !isLoading && !generatedImage && !error;
 
   return (
@@ -142,7 +130,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
           <button onClick={onDownload} className="w-full sm:w-auto flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-6 rounded-lg transition-colors">
             {t.download}
           </button>
-           <FeedbackDisplay onFeedback={handleFeedback} ratings={ratings} t={t} />
+           <FeedbackDisplay onFeedback={onFeedback} ratings={ratings} userVote={userVote} isVoting={isVoting} t={t} />
         </div>
       )}
 
