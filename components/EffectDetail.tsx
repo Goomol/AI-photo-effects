@@ -10,14 +10,10 @@ interface EffectDetailProps {
   generatedImage: string | null;
   isLoading: boolean;
   error: string | null;
-  ratings?: { likes: number; dislikes: number };
-  userVote?: 'good' | 'bad';
-  isVoting: boolean;
   onUpload: (images: UploadedImage[]) => void;
   onSubmit: () => void;
   onDownload: () => void;
   onRetry: () => void;
-  onFeedback: (rating: 'good' | 'bad') => void;
   onBack: () => void;
   t: any; // Using `any` for simplicity, should be properly typed from translations
 }
@@ -35,14 +31,10 @@ export const EffectDetail: React.FC<EffectDetailProps> = ({
   generatedImage,
   isLoading,
   error,
-  ratings,
-  userVote,
-  isVoting,
   onUpload,
   onSubmit,
   onDownload,
   onRetry,
-  onFeedback,
   onBack,
   t
 }) => {
@@ -100,12 +92,8 @@ export const EffectDetail: React.FC<EffectDetailProps> = ({
           isLoading={isLoading}
           generatedImage={generatedImage}
           error={error}
-          ratings={ratings}
-          userVote={userVote}
-          isVoting={isVoting}
           onDownload={onDownload}
           onRetry={onRetry}
-          onFeedback={onFeedback}
           t={{
             result: t.result,
             generating: t.generating,
@@ -116,10 +104,6 @@ export const EffectDetail: React.FC<EffectDetailProps> = ({
             errorApi: t.errorApi,
             errorNoImage: t.errorNoImage,
             errorUnknown: t.errorUnknown,
-            feedbackQuestion: t.feedbackQuestion,
-            feedbackThanks: t.feedbackThanks,
-            feedbackCommunity: t.feedbackCommunity,
-            feedbackCommunityDisliked: t.feedbackCommunityDisliked,
           }}
         />
       </div>

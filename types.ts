@@ -1,4 +1,5 @@
 
+
 export interface Effect {
   id: string;
   prompt: string;
@@ -14,3 +15,15 @@ export interface UploadedImage {
 }
 
 export type SortOption = 'alphabetical' | 'newest';
+
+// FIX: Export missing Ratings and UserVotes types.
+export interface Ratings {
+  [effectId: string]: {
+    likes: number;
+    dislikes: number;
+  };
+}
+
+export interface UserVotes {
+  [effectId: string]: 'good' | 'bad';
+}

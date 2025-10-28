@@ -9,18 +9,15 @@ interface EffectSelectorProps {
   t: {
     selectEffect: string;
     sortBy: string;
-    sortPopular: string;
     sortAlphabetical: string;
     sortNewest: string;
-    likes: string;
   };
 }
 
 const EffectCard: React.FC<{
   effect: Effect;
   onSelect: () => void;
-  t: { likes: string };
-}> = ({ effect, onSelect, t }) => {
+}> = ({ effect, onSelect }) => {
   return (
     <button
       onClick={onSelect}
@@ -30,11 +27,6 @@ const EffectCard: React.FC<{
         <h3 className="text-lg font-semibold text-white">{effect.title}</h3>
         <p className="text-sm text-gray-400 mt-1">{effect.description}</p>
       </div>
-      {(effect.likes ?? 0) > 0 && (
-        <div className="mt-3 text-end text-xs text-cyan-300 font-medium">
-          {t.likes.replace('{count}', (effect.likes ?? 0).toLocaleString())}
-        </div>
-      )}
     </button>
   );
 };
@@ -66,7 +58,6 @@ export const EffectSelector: React.FC<EffectSelectorProps> = ({ effects, onSelec
         <div className="flex items-center gap-2 flex-shrink-0">
           <span className="text-sm text-gray-400">{t.sortBy}:</span>
           <SortButton label={t.sortNewest} isActive={sortBy === 'newest'} onClick={() => onSortChange('newest')} />
-          <SortButton label={t.sortPopular} isActive={sortBy === 'popular'} onClick={() => onSortChange('popular')} />
           <SortButton label={t.sortAlphabetical} isActive={sortBy === 'alphabetical'} onClick={() => onSortChange('alphabetical')} />
         </div>
       </div>
@@ -76,7 +67,6 @@ export const EffectSelector: React.FC<EffectSelectorProps> = ({ effects, onSelec
             key={effect.id}
             effect={effect}
             onSelect={() => onSelect(effect.id)}
-            t={{ likes: t.likes }}
           />
         ))}
       </div>

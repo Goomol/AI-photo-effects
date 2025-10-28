@@ -1,4 +1,5 @@
-import type { Effect } from './types';
+
+import type { Effect, Ratings } from './types';
 
 // The base effect data, without language-specific fields.
 export const BASE_EFFECTS: Omit<Effect, 'title' | 'description'>[] = [
@@ -249,3 +250,9 @@ export const BASE_EFFECTS: Omit<Effect, 'title' | 'description'>[] = [
     imageLabels: ['Your Photo'],
   },
 ];
+
+// FIX: Define and export BASE_RATINGS, which was missing.
+export const BASE_RATINGS: Ratings = BASE_EFFECTS.reduce((acc, effect) => {
+  acc[effect.id] = { likes: 0, dislikes: 0 };
+  return acc;
+}, {} as Ratings);

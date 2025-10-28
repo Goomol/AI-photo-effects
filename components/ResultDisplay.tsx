@@ -6,12 +6,8 @@ interface ResultDisplayProps {
   isLoading: boolean;
   generatedImage: string | null;
   error: string | null;
-  ratings?: { likes: number; dislikes: number };
-  userVote?: 'good' | 'bad';
-  isVoting: boolean;
   onDownload: () => void;
   onRetry: () => void;
-  onFeedback: (rating: 'good' | 'bad') => void;
   t: {
     result: string;
     generating: string;
@@ -22,10 +18,6 @@ interface ResultDisplayProps {
     errorApi: string;
     errorNoImage: string;
     errorUnknown: string;
-    feedbackQuestion: string;
-    feedbackThanks: string;
-    feedbackCommunity: string;
-    feedbackCommunityDisliked: string;
   };
 }
 
@@ -43,55 +35,12 @@ const ErrorMessage: React.FC<{ error: string, t: ResultDisplayProps['t'] }> = ({
   );
 };
 
-const FeedbackDisplay: React.FC<{
-  onFeedback: (rating: 'good' | 'bad') => void;
-  ratings?: { likes: number; dislikes: number };
-  userVote?: 'good' | 'bad';
-  isVoting: boolean;
-  t: ResultDisplayProps['t'];
-}> = ({ onFeedback, ratings, userVote, isVoting, t }) => {
-  
-  if (userVote) {
-    const likeCount = ratings?.likes ?? 0;
-    const dislikeCount = ratings?.dislikes ?? 0;
-
-    return (
-        <div className="text-center bg-gray-800/50 p-3 rounded-lg">
-            <p className="font-semibold text-cyan-300">{t.feedbackThanks}</p>
-            {userVote === 'good' && likeCount > 0 && (
-                <p className="text-sm text-gray-400 mt-1">
-                    {t.feedbackCommunity.replace('{count}', likeCount.toLocaleString())}
-                </p>
-            )}
-             {userVote === 'bad' && dislikeCount > 0 && (
-                <p className="text-sm text-gray-400 mt-1">
-                    {t.feedbackCommunityDisliked.replace('{count}', dislikeCount.toLocaleString())}
-                </p>
-            )}
-        </div>
-    );
-  }
-
-  return (
-    <div className="flex items-center justify-center gap-3 text-gray-300">
-        <span className={isVoting ? 'opacity-50' : ''}>{t.feedbackQuestion}</span>
-        <button onClick={() => onFeedback('good')} disabled={isVoting} className="p-2 rounded-full transition-colors text-2xl hover:bg-gray-700 disabled:opacity-50 disabled:cursor-wait">👍</button>
-        <button onClick={() => onFeedback('bad')} disabled={isVoting} className="p-2 rounded-full transition-colors text-2xl hover:bg-gray-700 disabled:opacity-50 disabled:cursor-wait">👎</button>
-    </div>
-  );
-};
-
-
 export const ResultDisplay: React.FC<ResultDisplayProps> = ({
   isLoading,
   generatedImage,
   error,
-  ratings,
-  userVote,
-  isVoting,
   onDownload,
   onRetry,
-  onFeedback,
   t
 }) => {
   const showInitialState = !isLoading && !generatedImage && !error;
@@ -125,20 +74,19 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
         )}
       </div>
 
-      {generatedImage && !isLoading && (
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in">
-          <button onClick={onDownload} className="w-full sm:w-auto flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+      <div className="flex flex-col items-center justify-center gap-4 animate-fade-in">
+        {generatedImage && !isLoading && (
+          <button onClick={onDownload} className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-6 rounded-lg transition-colors">
             {t.download}
           </button>
-           <FeedbackDisplay onFeedback={onFeedback} ratings={ratings} userVote={userVote} isVoting={isVoting} t={t} />
-        </div>
-      )}
+        )}
 
-      {error && !isLoading && (
-         <button onClick={onRetry} className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-6 rounded-lg transition-colors animate-fade-in">
-            {t.tryAgain}
-         </button>
-      )}
+        {error && !isLoading && (
+          <button onClick={onRetry} className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+              {t.tryAgain}
+          </button>
+        )}
+      </div>
     </div>
   );
 };
